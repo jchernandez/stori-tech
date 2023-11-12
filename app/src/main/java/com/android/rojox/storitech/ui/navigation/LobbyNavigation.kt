@@ -10,10 +10,7 @@ import coil.annotation.ExperimentalCoilApi
 import com.android.rojox.core.model.UserSession
 import com.android.rojox.storitech.activities.HomeActivity
 import com.android.rojox.storitech.activities.LobbyActivity
-import com.android.rojox.storitech.ui.screens.ImageUploadScreen
-import com.android.rojox.storitech.ui.screens.LobbyScreen
-import com.android.rojox.storitech.ui.screens.OnboardingScreen
-import com.android.rojox.storitech.ui.screens.PreviewImageUploadScreen
+import com.android.rojox.storitech.ui.screens.*
 import com.android.rojox.storitech.utils.composable
 
 
@@ -52,7 +49,7 @@ fun LobbyNavigation(activity: LobbyActivity) {
         }
 
         composable(NavItem.ImageValidation) {
-            ImageUploadScreen(activity.onboardingViewModel, NavigationActions { action ->
+            ValidateUserScreen(activity.onboardingViewModel, NavigationActions { action ->
                 if (action == ActionType.VALIDATE_ACCOUNT) {
                     startHomeActivity(
                         activity,

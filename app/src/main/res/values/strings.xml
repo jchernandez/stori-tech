@@ -19,5 +19,6 @@
     <string name="validate_image">Validar Imagen</string>
     <string name="password_details">* Longitud de 8\n* Una mayuscula\n* Un número</string>
     <string name="no_activity">Sin actividad</string>
+    <string name="user_registred">Usuario registrado</string>
 
 </resources>

@@ -13,15 +13,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +42,7 @@ import com.android.rojox.storitech.utils.mockDbClient
 import com.android.rojox.storitech.utils.mockStorageClient
 import com.android.rojox.storitech.utils.observeAsActions
 import com.android.rojox.storitech.viewmodels.OnboardingViewModel
+import kotlinx.coroutines.delay
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -49,8 +51,82 @@ import java.util.*
 
 
 @Composable
-fun ImageUploadScreen(viewModel: OnboardingViewModel, actions: NavigationActions =  NavigationActions()) {
+fun ValidateUserScreen(viewModel: OnboardingViewModel, actions: NavigationActions =  NavigationActions()) {
 
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    var isValidated by remember {
+        mutableStateOf(false)
+    }
+
+    viewModel.validateUser.observeAsActions {
+        if (it?.status == DataStatus.SUCCESS) {
+            isValidated = true
+        }
+    }
+
+    BackHandler {
+    }
+
+    UiApp {
+
+        if (isLoading) {
+            ProgressDialog()
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Center
+        ) {
+
+            if (! isValidated) {
+                ImageUploadScreen(viewModel = viewModel) {
+                    actions.onAction(ActionType.CANCEL_ONBOARDING)
+                }
+            } else {
+               DoneScreen(
+                   modifier = Modifier.align(Center)
+               ) {
+                   actions.onAction(ActionType.VALIDATE_ACCOUNT)
+               }
+            }
+
+
+        }
+
+
+    }
+}
+
+
+@Composable
+private fun DoneScreen(modifier: Modifier = Modifier, onFinish:() -> Unit) {
+    LaunchedEffect(true) {
+        for (i in 0 until 3) {
+            delay(1000)
+        }
+        onFinish()
+    }
+    Column(
+        modifier
+    ) {
+        Text(
+            text = stringResource(id = R.string.user_registred),
+            color = Color.Green,
+            style = MaterialTheme.typography.h5
+        )
+        Image(
+            modifier = Modifier.size(100.dp),
+            imageVector = Icons.Default.CheckCircle,
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(Color.Green)
+        )
+    }
+}
+
+
+@Composable
+fun ImageUploadScreen(viewModel: OnboardingViewModel, onCanelOnboarding:() -> Unit) {
     val context = LocalContext.current
 
     var capturedImageUri by remember {
@@ -99,72 +175,48 @@ fun ImageUploadScreen(viewModel: OnboardingViewModel, actions: NavigationActions
         R.string.retake_image
     } else R.string.take_id_photo
 
-    val isLoading by viewModel.isLoading.collectAsState()
 
-    viewModel.validateUser.observeAsActions {
-        if (it?.status == DataStatus.SUCCESS) {
-            actions.onAction(ActionType.VALIDATE_ACCOUNT)
-        }
-    }
-
-    BackHandler {
-    }
-
-    UiApp {
-
-        if (isLoading) {
-            ProgressDialog()
-        }
-
-        Box(
-            modifier = Modifier.fillMaxSize()
+    Box {
+        IconButton(
+            modifier = Modifier.align(Alignment.TopEnd),
+            onClick = onCanelOnboarding
         ) {
-            IconButton(
-                modifier = Modifier.align(Alignment.TopEnd),
+            Icon(imageVector = Icons.Outlined.Close, contentDescription = "")
+        }
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+                .align(Alignment.Center)
+        ) {
+            if (capturedImageUri.path?.isNotEmpty() == true) {
+                Image(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .padding(16.dp, 8.dp)
+                        .align(Alignment.CenterHorizontally),
+                    painter = rememberAsyncImagePainter(capturedImageUri),
+                    contentDescription = null
+                )
+            }
+            Button(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = onClickImageRequest) {
+                Text(text = stringResource(id = buttonStringId))
+            }
+
+
+            Button(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                enabled = capturedImageUri.path?.isNotEmpty() == true,
                 onClick = {
-                actions.onAction(ActionType.CANCEL_ONBOARDING)
-                }
-            ) {
-                Icon(imageVector = Icons.Outlined.Close, contentDescription = "")
+                    viewModel.uploadImage()
+                }) {
+                Text(text = stringResource(id = R.string.validate_image))
             }
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-                    .align(Alignment.Center)
-            ) {
-                if (capturedImageUri.path?.isNotEmpty() == true) {
-                    Image(
-                        modifier = Modifier
-                            .height(200.dp)
-                            .padding(16.dp, 8.dp)
-                            .align(Alignment.CenterHorizontally),
-                        painter = rememberAsyncImagePainter(capturedImageUri),
-                        contentDescription = null
-                    )
-                }
-                Button(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = onClickImageRequest) {
-                    Text(text = stringResource(id = buttonStringId))
-                }
-
-
-                Button(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    enabled = capturedImageUri.path?.isNotEmpty() == true,
-                    onClick = {
-                        viewModel.uploadImage()
-                    }) {
-                    Text(text = stringResource(id = R.string.validate_image))
-                }
-            }
-
-
         }
     }
 }
-
 
 private fun createImageFile(context: Context): File {
     val timeStamp = SimpleDateFormat(
@@ -184,7 +236,14 @@ private fun createImageFile(context: Context): File {
 @Composable
 @Preview
 fun PreviewImageUploadScreen() {
-    ImageUploadScreen(
+    Box(modifier = Modifier.fillMaxSize()) {
+        DoneScreen(
+            modifier = Modifier.align(Center)
+        ) {
+        }
+    }
+    /*
+    ValidateUserScreen(
         OnboardingViewModel(
-        mockDbClient, mockStorageClient))
+            mockDbClient, mockStorageClient))*/
 }
