@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "396535423268",
+    "project_id": "storitech-1398f",
+    "storage_bucket": "storitech-1398f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:396535423268:android:b465c76a6d5c3b8e7a13b1",
+        "android_client_info": {
+          "package_name": "com.android.rojox.storitech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWkz7BFgjqxxVI86FC1zaak8KPeTY-uvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

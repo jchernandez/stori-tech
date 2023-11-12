@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Stori</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="sign_in">Registrate</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="loading">Cargando</string>
+    <string name="error_login">El correo o la contraseña es incorrecta</string>
+    <string name="current_balance">Saldo disponible: %s</string>
+    <string name="good_morning">Buenos días</string>
+    <string name="good_afternoon">Buenas tardes</string>
+    <string name="good_night">Buenas noches</string>
+    <string name="last_movements">Últimos Movimientos</string>
+    <string name="name">Nombre</string>
+    <string name="lastName">Apellido</string>
+    <string name="create_account">Crear cuenta</string>
+    <string name="retake_image">Tomar una nueva foto</string>
+    <string name="take_id_photo">Toma una foto de tu identificación</string>
+    <string name="validate_image">Validar Imagen</string>
+    <string name="password_details">* Longitud de 8\n* Una mayuscula\n* Un número</string>
+    <string name="no_activity">Sin actividad</string>
+
+</resources>
